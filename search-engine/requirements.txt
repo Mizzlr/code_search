@@ -1,0 +1,6 @@
+dill
+keras
+annoy
+tqdm
+ktext
+nltk
