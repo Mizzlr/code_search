@@ -4,3 +4,6 @@ annoy
 tqdm
 ktext
 nltk
+torch
+torchvision
+fastai
