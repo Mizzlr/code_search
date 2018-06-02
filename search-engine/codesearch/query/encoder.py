@@ -16,6 +16,12 @@ def encode_query_string(query_string):
     return avg_emb[0]
 
 
+def encode_doc_strings(doc_strings):
+    idx_docs = vocab.transform(doc_strings, max_seq_len=30, padding=False)
+    avg_emb, max_emb, last_emb = get_embeddings(lang_model, idx_docs)
+    return avg_emb
+
+
 if __name__ == '__main__':
     docstrings = ['"generates batches of samples : param data : array - like , shape = ( n_samples , n_features ) : param labels : array - like , shape = ( n_samples , ) : return :"\n',
         '"converts labels as single integer to row vectors . for instance , given a three class problem , labels would be mapped as label_1 : [ 1 0 0 ] , label_2 : [ 0 1 0 ] , label_3 : [ 0 , 0 , 1 ] where labels can be either int or string . : param labels : array - like , shape = ( n_samples , ) : return :"\n',
