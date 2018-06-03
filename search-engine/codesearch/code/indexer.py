@@ -41,5 +41,7 @@ def run_indexing_pipeline(codebase_root_dir, index_dump_dir):
 
 
 if __name__ == '__main__':
-    codebase_root_dir = Path(__file__).absolute().parent.parent
-    run_indexing_pipeline(codebase_root_dir, 'index')
+    # codebase_root_dir = Path(__file__).absolute().parent.parent
+    # codebase_root_dir = 'uploads'
+    import sys
+    run_indexing_pipeline(sys.argv[1], sys.argv[2])
