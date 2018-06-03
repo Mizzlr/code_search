@@ -26,12 +26,12 @@ def run_indexing_pipeline(codebase_root_dir, index_dump_dir):
     all_vectors = []
 
     for i, row in codebase_df.iterrows():
-        codebase_df.loc[i, 'code_vec_hash'] = hash(code_vecs[i, :].data.tobytes())
         all_vectors.append(code_vecs[i, :])
+        codebase_df.loc[i, 'code_vec_hash'] = len(all_vectors) - 1  # hash(code_vecs[i, :].data.tobytes())
 
         if row['docstring']:
-            codebase_df.loc[i, 'comment_vec_hash'] = hash(comment_vecs[i, :].data.tobytes())
             all_vectors.append(comment_vecs[i, :])
+            codebase_df.loc[i, 'comment_vec_hash'] = len(all_vectors) - 1  # hash(comment_vecs[i, :].data.tobytes())
 
     index_dump_dir = Path(index_dump_dir)
     searchIndex = create_nmslib_search_index(np.asarray(all_vectors))

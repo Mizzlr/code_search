@@ -16,6 +16,7 @@ def create_codebase_dataframe(codebase_dir):
             codebase_data.append({
                 'file_name': file_name,
                 'function_name': function_name,
+                'line': line_no,
                 'function_body': function_body,
                 'tokenized_body': tokenized_body,
                 'docstring': docstring
