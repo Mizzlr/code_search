@@ -1,22 +1,45 @@
 from codesearch.utils.general_utils import create_nmslib_search_index
-from codesearch.utils.vector_utils import hash_vector, union_vectors
 from codesearch.code.parser import create_codebase_dataframe
 from codesearch.code.encoder import encode_code_to_natural_lang
 from codesearch.query.encoder import encode_doc_strings
 from pathlib import Path
+import numpy as np
 
 
 def run_indexing_pipeline(codebase_root_dir, index_dump_dir):
 
+    codebase_root_dir = Path(codebase_root_dir)
+
+    codebase_df = create_codebase_dataframe(codebase_root_dir)
+    code_vecs = encode_code_to_natural_lang(codebase_df['tokenized_body'])
+    comment_vecs = encode_doc_strings(codebase_df['docstring'])
+
+    # codebase_df['code_vec'] = code_vecs
+    # codebase_df['comment_vec'] = comment_vecs
+
+    code_vecs.flags.writeable = False
+    comment_vecs.flags.writeable = False
+
+    codebase_df['code_vec_hash'] = np.nan
+    codebase_df['comment_vec_hash'] = np.nan
+
+    all_vectors = []
+
+    for i, row in codebase_df.iterrows():
+        codebase_df.loc[i, 'code_vec_hash'] = hash(code_vecs[i, :].data.tobytes())
+        all_vectors.append(code_vecs[i, :])
+
+        if row['docstring']:
+            codebase_df.loc[i, 'comment_vec_hash'] = hash(comment_vecs[i, :].data.tobytes())
+            all_vectors.append(comment_vecs[i, :])
+
     index_dump_dir = Path(index_dump_dir)
+    searchIndex = create_nmslib_search_index(np.asarray(all_vectors))
 
-    codebase_files_df = create_codebase_files_dataframe(codebase_root_dir)
-    codebase_df = create_codebase_dataframe(codebase_files_df)
-    code_vecs = encode_code_to_natural_lang(codebase_df['tokenized_code_snippet'])
-    comment_vecs = encode_doc_strings(codebase_df['doc_string']) * codebase_df['doc_string']
-    codebase_df['code_vecs_hash'] = hash_vector(code_vecs)
-    codebase_df['comment_vecs_hash'] = hash_vector(comment_vecs)
+    searchIndex.saveIndex(str(index_dump_dir / 'searchindex.nmslib'))
+    codebase_df.to_csv((index_dump_dir / 'codebase.df.csv').open('w'))
 
-    searchIndex = create_nmslib_search_index(union_vectors(code_vecs, comment_vecs))
-    searchIndex.saveIndex(index_dump_dir / 'searchindex.nmslib')
-    codebase_df.write_csv(index_dump_dir / 'codebase.dataframe')
+
+if __name__ == '__main__':
+    codebase_root_dir = Path(__file__).absolute().parent.parent
+    run_indexing_pipeline(codebase_root_dir, 'index')

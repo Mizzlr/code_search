@@ -13,7 +13,7 @@ __all__ = ['encode_code_to_natural_lang']
 
 
 def encode_code_to_natural_lang(code_strings: List[str]):
-    return code2emb_model.predict(enc_pp.transform_parallel(code_string), batch_size=20000)
+    return code2emb_model.predict(enc_pp.transform_parallel(code_strings), batch_size=20000)
 
 
 if __name__ == '__main__':

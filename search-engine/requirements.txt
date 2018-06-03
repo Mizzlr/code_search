@@ -7,3 +7,5 @@ nltk
 torch
 torchvision
 fastai
+wget
+nmslib
