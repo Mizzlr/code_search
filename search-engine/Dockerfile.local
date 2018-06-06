@@ -1,0 +1,21 @@
+FROM python:latest
+
+RUN apt-get update -y && apt-get install -y redis-tools redis-server
+
+RUN pip3 install spacy
+RUN python3 -m spacy download en
+
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+WORKDIR /app/
+
+# copy the model files locally
+COPY codesearch/.data/ codesearch/.data/
+
+# copy the source code
+COPY codesearch/ codesearch/
+COPY entrypoint.sh indexer.sh /app/
+RUN chmod +x entrypoint.sh indexer.sh
+
+CMD ["/bin/bash", "-c", "./entrypoint.sh"]

@@ -6,7 +6,7 @@ from codesearch.code.summarizer import summarize_code
 
 class SemanticCodeSearchEngine:
     def __init__(self, search_index_dir):
-        self.codebase_df = pd.read_csv(search_index_dir + '/codebase.df.csv')
+        self.codebase_df = pd.read_feather(search_index_dir + '/codebase.df.feather')
         self.search_index = nmslib.init(method='hnsw', space='cosinesimil')
         self.search_index.loadIndex(search_index_dir + '/searchindex.nmslib')
 
@@ -40,5 +40,24 @@ class SemanticCodeSearchEngine:
 
 if __name__ == '__main__':
     import json
-    search_engine = SemanticCodeSearchEngine('index')
-    print(json.dumps(search_engine.search('load text proccessor'), indent=4))
+    import time
+    import sys
+    from codesearch.utils.redis_queue import RedisQueueExchange
+
+    search_engine = SemanticCodeSearchEngine(sys.argv[1])
+    queue_exchange = RedisQueueExchange()
+
+    while True:
+        while not queue_exchange.empty('input'):
+            # pop query from the input queue
+            query = queue_exchange.fetch('input')
+            print('Found query:', query)
+            # perform search and write result to output queue
+            result = json.dumps(search_engine.search(query.replace('+', ' ')), indent=4)
+            print('Writing results:', result)
+            queue_exchange.write('output', query, result)
+            queue_exchange.delete('input', query)
+            pass
+
+        # goto sleep for 100 milliseconds
+        time.sleep(0.1)
