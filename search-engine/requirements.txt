@@ -1,12 +1,13 @@
+torch
+torchvision
 dill
 keras
 annoy
 tqdm
 ktext
 nltk
-torch
-torchvision
 fastai
 wget
 nmslib
 browsepy
+redis

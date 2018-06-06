@@ -1,10 +1,12 @@
 FROM python:latest
 
-RUN apt-get update -y && apt-get install -y redis-tools redis-server
+RUN apt-get update -y && apt-get install -y redis-tools redis-server unzip tree curl nodejs npm
+RUN npm install --global fkill-cli
 
 RUN pip3 install spacy
 RUN python3 -m spacy download en
 
+COPY other_modules/ other_modules/
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
