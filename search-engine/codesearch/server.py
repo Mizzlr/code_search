@@ -29,7 +29,7 @@ def uploaded_file(filename):
     '''
 
 
-@app.route('/home/', methods=['GET'])
+@app.route('/home/', methods=['GET', 'POST'])
 @app.route('/upload/', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
@@ -46,7 +46,7 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            subprocess.check_output(['/bin/bash', '-c', 'indexer.sh'])
+            subprocess.check_output(['/bin/bash', '-c', './indexer.sh'])
             queue_exchange.delete('output')
             return redirect(url_for('uploaded_file', filename=filename))
 
@@ -63,7 +63,7 @@ def upload_file():
 
 @app.route('/semantic/index/', methods=['GET', 'POST'])
 def semantic_index():
-    subprocess.check_output(['/bin/bash', '-c', 'indexer.sh'])
+    subprocess.check_output(['/bin/bash', '-c', './indexer.sh'])
     queue_exchange.delete('output')
     return '''
     <!doctype html>
@@ -83,12 +83,15 @@ def fetch_result(query):
 @app.route('/semantic/search/', methods=['GET'])
 def semantic_search():
     query = request.args.get('q', '')
+    print('Search term: ', query)
     if not query:
         return "Please provide query param `q` for example /search/?q=load+data+from+files", 400
     queue_exchange.write('input', query)
     results = timeout_decorator.timeout(10, use_signals=False)(fetch_result)(query)
+    queue_exchange.delete('output', query)
     return jsonify(json.loads(results)), 200
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', 8080, threaded=True)
+    import sys
+    app.run('0.0.0.0', int(sys.argv[1]), threaded=True)

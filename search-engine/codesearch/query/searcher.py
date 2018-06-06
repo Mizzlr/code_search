@@ -48,16 +48,22 @@ if __name__ == '__main__':
     queue_exchange = RedisQueueExchange()
 
     while True:
-        while not queue_exchange.empty('input'):
-            # pop query from the input queue
-            query = queue_exchange.fetch('input')
-            print('Found query:', query)
-            # perform search and write result to output queue
-            result = json.dumps(search_engine.search(query.replace('+', ' ')), indent=4)
-            print('Writing results:', result)
-            queue_exchange.write('output', query, result)
-            queue_exchange.delete('input', query)
-            pass
+        try:
+            while not queue_exchange.empty('input'):
+                # pop query from the input queue
+                query = queue_exchange.fetch('input').decode()
+                print('Found query:', query)
+                # perform search and write result to output queue
+                result = json.dumps(search_engine.search(query), indent=4)
+                print('Writing results:', result)
+                queue_exchange.write('output', query, result)
+                queue_exchange.delete('input', query)
+                pass
 
-        # goto sleep for 100 milliseconds
-        time.sleep(0.1)
+            # goto sleep for 100 milliseconds
+            time.sleep(0.1)
+        except Exception as exc:
+            print(exc)
+            print('Restarting searcher.py ...')
+            search_engine = SemanticCodeSearchEngine(sys.argv[1])
+            queue_exchange = RedisQueueExchange()

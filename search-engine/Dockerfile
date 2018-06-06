@@ -12,7 +12,7 @@ RUN pip3 install -r requirements.txt
 WORKDIR /app/
 
 # download model files from internet
-RUN mkdir -p codesearch/.data/{code2emb,lang_model,seq2seq}
+RUN mkdir -p codesearch/.data/code2emb codesearch/.data/lang_model codesearch/.data/seq2seq
 RUN curl https://storage.googleapis.com/kubeflow-examples/code_search/data/code2emb/code2emb_model.hdf5 > codesearch/.data/code2emb/code2emb_model.hdf5
 RUN curl https://storage.googleapis.com/kubeflow-examples/code_search/data/lang_model/lang_model_cpu_v2.torch > codesearch/.data/lang_model/lang_model_cpu_v2.torch
 RUN curl https://storage.googleapis.com/kubeflow-examples/code_search/data/lang_model/vocab_v2.cls > codesearch/.data/lang_model/vocab_v2.cls

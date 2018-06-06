@@ -37,7 +37,7 @@ def run_indexing_pipeline(codebase_root_dir, index_dump_dir):
     searchIndex = create_nmslib_search_index(np.asarray(all_vectors))
 
     searchIndex.saveIndex(str(index_dump_dir / 'searchindex.nmslib'))
-    codebase_df.to_feather((index_dump_dir / 'codebase.df.feather').open('w'))
+    codebase_df.to_feather((index_dump_dir / 'codebase.df.feather').open('wb'))
 
 
 if __name__ == '__main__':
