@@ -20,6 +20,9 @@ RUN curl https://storage.googleapis.com/kubeflow-examples/code_search/data/seq2s
 RUN curl https://storage.googleapis.com/kubeflow-examples/code_search/data/seq2seq/py_comment_proc_v2.dpkl > codesearch/.data/seq2seq/py_comment_proc_v2.dpkl
 RUN curl https://storage.googleapis.com/kubeflow-examples/code_search/data/seq2seq/py_func_sum_v9_.epoch16-val2.55276.hdf5 > codesearch/.data/seq2seq/py_func_sum_v9_.epoch16-val2.55276.hdf5
 
+RUN pip3 install timeout_decorator astor tensorflow
+
+ENV PYTHONPATH=$PYTHONPATH:/app/
 # copy the source code
 COPY codesearch/ codesearch/
 COPY entrypoint.sh indexer.sh /app/

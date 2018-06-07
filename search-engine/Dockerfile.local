@@ -1,20 +1,20 @@
 FROM python:latest
 
-RUN apt-get update -y && apt-get install -y redis-tools redis-server unzip tree curl nodejs npm
-RUN npm install --global fkill-cli
+RUN apt-get update -y && apt-get install -y redis-tools redis-server \
+    unzip tree curl htop vim
 
 RUN pip3 install spacy
 RUN python3 -m spacy download en
 
-COPY other_modules/ other_modules/
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt -vvv
 
 WORKDIR /app/
 
 # copy the model files locally
 COPY codesearch/.data/ codesearch/.data/
 
+ENV PYTHONPATH=$PYTHONPATH:/app/
 # copy the source code
 COPY codesearch/ codesearch/
 COPY entrypoint.sh indexer.sh /app/

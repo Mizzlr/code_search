@@ -11,3 +11,6 @@ wget
 nmslib
 browsepy
 redis
+astor
+tensorflow
+timeout_decorator

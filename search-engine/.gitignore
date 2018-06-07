@@ -5,3 +5,4 @@ index/
 uploads/
 # other_modules/
 *.rdb
+Dockerfile.2
