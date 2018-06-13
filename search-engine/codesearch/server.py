@@ -54,29 +54,58 @@ def upload_file():
 
     return '''
     <!doctype html>
+    <head>
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
-        body {
-            margin: auto;
-        }
+        body    {
+                width: 700px;
+                height: 300px;
+                # border: 1px solid #c3c3c3;
+                display: -webkit-flex;
+                display: flex;
+                display: block;
+                -webkit-flex-wrap: wrap;
+                flex-wrap: wrap;
+                -webkit-align-content: center;
+                align-content: center;
+                margin: auto;
+                font-family: "Courier New", Courier, monospace;
+            }
     </style>
-    <title>Upload new File</title>
-    <body>
-    <h1>Upload a zip or python file for semantic indexing</h1>
-    <form method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
+    <title>Semantic Code Search</title>
+    </head>
+    <body class="container">
+    <h1> <b> Welcome to Semantic Code Search </b> </h1>
+    <div>
+    <h2>Upload a zip or python file for semantic indexing</h2>
+    <form  method=post enctype=multipart/form-data style="display: inline;" style="margin: 0; padding: 0;">
+      <p>
+        <input type=file name=file style="display: inline;"> <input style="display: inline;" type=submit value=Upload>
+      </p>
     </form>
-
-    <p> <a href="/browse/"> Browse files here </a> </p>
-    <p> <a href="/semantic/index/"> Click here to re index everything again. </a> </p> <br/>
-
-    <h1>Type search term here</h1>
+    </div> <br/>
+    <div>
+    <p> <a href="/browse/"> Browse uploaded files from here </a> </p>
+    </div>
+    <div>
+    <p> <a href="/semantic/index/"> Click here to re-index everything again </a> </p> <br/>
+    </div>
+    <div>
+    <h2>Type search term here</h2>
     <form method="GET" action="/semantic/search/">
       <p>
         <input type="text" name="q">
          <input type=submit value=Search>
       </p>
     </form>
+    </div>
     </body>
     '''
 
@@ -143,16 +172,49 @@ def browse(req_path):
              for path in pathlib.Path(abs_path).glob('**/*.py')]
 
     return render_template_string("""
-    <h1> Browse for files here </h1>
+    <!doctype html>
+    <head>
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        body    {
+                width: 700px;
+                height: 300px;
+                # border: 1px solid #c3c3c3;
+                display: -webkit-flex;
+                display: flex;
+                display: block;
+                -webkit-flex-wrap: wrap;
+                flex-wrap: wrap;
+                -webkit-align-content: center;
+                align-content: center;
+                margin: auto;
+                font-family: "Courier New", Courier, monospace;
+            }
+    </style>
+    <title>Semantic Code Search</title>
+    </head>
+    <body class="container">
+    <h1> <b> Browse uploaded files from here  </b> </h1>
     <p> <a href="/home/"> Back to home </a> </p> <br/>
     <ul>
         {% for file in files %}
         <li><a href="/browse/{{ file }}">{{ file }}</a></li>
         {% endfor %}
     </ul>
+    </body>
+
     """, files=files)
 
 
 if __name__ == '__main__':
     import sys
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run('0.0.0.0', int(sys.argv[1]), threaded=True)
